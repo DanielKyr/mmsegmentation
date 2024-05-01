@@ -71,6 +71,7 @@ class FCNHead(BaseDecodeHead):
                 conv_cfg=self.conv_cfg,
                 norm_cfg=self.norm_cfg,
                 act_cfg=self.act_cfg)
+        self.bn = nn.SyncBatchNorm(self.in_channels)
 
     def _forward_feature(self, inputs):
         """Forward function for feature maps before classifying each pixel with
@@ -87,6 +88,7 @@ class FCNHead(BaseDecodeHead):
         feats = self.convs(x)
         if self.concat_input:
             feats = self.conv_cat(torch.cat([x, feats], dim=1))
+        feats = self.bn(feats)
         return feats
 
     def forward(self, inputs):
